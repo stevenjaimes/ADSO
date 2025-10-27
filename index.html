@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Steven - Tu Tienda Online</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="/src/style.css">
+</head>
+<body>
+  <header class="header">
+    <div class="container">
+      <div class="header-content">
+        <div class="logo">
+          <h1>StevStore</h1>
+        </div>
+        <nav class="nav">
+          <button class="nav-link" data-category="all">Todo</button>
+          <button class="nav-link" data-category="electronica">Electrónica</button>
+          <button class="nav-link" data-category="ropa">Ropa</button>
+          <button class="nav-link" data-category="hogar">Hogar</button>
+          <button class="nav-link" data-category="deportes">Deportes</button>
+        </nav>
+        <div class="header-actions">
+          <button class="cart-btn" id="cartBtn">
+            <i class="fas fa-shopping-cart"></i>
+            <span class="cart-count" id="cartCount">0</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="main">
+    <section class="hero">
+      <div class="floating-elements">
+        <div class="floating-element"></div>
+        <div class="floating-element"></div>
+        <div class="floating-element"></div>
+        <div class="floating-element"></div>
+        <div class="floating-element"></div>
+      </div>
+      <div class="container">
+        <div class="hero-content">
+          <h2 class="hero-title">Descubre los Mejores Productos</h2>
+          <p class="hero-subtitle">Calidad premium a precios increíbles</p>
+          <a href="#featuredProducts" class="hero-cta">Explorar Productos</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="featured-section" id="featuredProducts">
+      <div class="container">
+        <h2 class="section-title">Productos Destacados</h2>
+        <p class="featured-subtitle">Seleccionados por su calidad y popularidad — lo mejor para ti.</p>
+        <div class="featured-slider">
+          <button class="slider-btn prev" id="featuredPrev" aria-label="Anterior producto">
+            <i class="fas fa-chevron-left"></i>
+          </button>
+
+          <div class="products-grid" id="featuredGrid">
+            <div class="loading">Cargando productos...</div>
+          </div>
+
+          <button class="slider-btn next" id="featuredNext" aria-label="Siguiente producto">
+            <i class="fas fa-chevron-right"></i>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <section class="products-section">
+      <div class="container">
+        <div class="section-header">
+          <h2 class="section-title">Todos los Productos</h2>
+          <div class="filters">
+            <select class="filter-select" id="sortFilter">
+              <option value="default">Ordenar por</option>
+              <option value="price-asc">Precio: Menor a Mayor</option>
+              <option value="price-desc">Precio: Mayor a Menor</option>
+              <option value="name-asc">Nombre: A-Z</option>
+            </select>
+          </div>
+        </div>
+        <div class="products-grid" id="allProducts">
+          <div class="loading">Cargando productos...</div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div class="modal" id="cartModal">
+    <div class="modal-overlay" id="modalOverlay"></div>
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Carrito de Compras</h3>
+        <button class="close-btn" id="closeCartBtn">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="cart-items" id="cartItems">
+          <div class="empty-cart">Tu carrito está vacío</div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <div class="cart-total">
+          <span>Total:</span>
+          <span class="total-amount" id="totalAmount">$0.00</span>
+        </div>
+        <button class="btn btn-primary" id="checkoutBtn" disabled>Proceder al Pago</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="checkoutModal">
+    <div class="modal-overlay" id="checkoutOverlay"></div>
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Finalizar Compra</h3>
+        <button class="close-btn" id="closeCheckoutBtn">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form class="checkout-form" id="checkoutForm">
+          <div class="form-group">
+            <label for="customerName">Nombre Completo</label>
+            <input type="text" id="customerName" name="customerName" required>
+          </div>
+          <div class="form-group">
+            <label for="customerEmail">Correo Electrónico</label>
+            <input type="email" id="customerEmail" name="customerEmail" required>
+          </div>
+          <div class="form-group">
+            <label for="customerPhone">Teléfono</label>
+            <input type="tel" id="customerPhone" name="customerPhone" required>
+          </div>
+          <div class="order-summary">
+            <h4>Resumen del Pedido</h4>
+            <div class="summary-items" id="summaryItems"></div>
+            <div class="summary-total">
+              <span>Total:</span>
+              <span class="total-amount" id="checkoutTotal">$0.00</span>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary btn-block">Confirmar Pedido</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="successModal">
+    <div class="modal-overlay" id="successOverlay"></div>
+    <div class="modal-content success-content">
+      <div class="success-icon">
+        <i class="fas fa-check-circle" style="font-size: 64px; color: var(--success-color);"></i>
+      </div>
+      <h3>¡Pedido Realizado con Éxito!</h3>
+      <p>Gracias por tu compra. Recibirás un correo de confirmación pronto.</p>
+      <button class="btn btn-primary" id="closeSuccessBtn">Continuar Comprando</button>
+    </div>
+  </div>
+
+    <!-- ABOUT SECTION -->
+    <section class="about-section" id="aboutMe">
+      <div class="container">
+        <div class="about-inner">
+          <div class="about-image">
+            <img src="https://res.cloudinary.com/dwbe8zbpn/image/upload/v1761520597/Generated_Image_October_18_2025_-_12_10AM_i0c7mq.png" alt="Foto de Henry Steeven Jaimes Bastos">
+          </div>
+          <div class="about-text">
+            <h2 class="section-title">Sobre mí</h2>
+            <p>
+              Soy Henry Steeven Jaimes Bastos, estudiante del programa ADSO (Análisis y Desarrollo de Sistemas de Información) en el SENA. Este proyecto corresponde a la actividad de maquetación y consumo de APIs, implementado con tecnologías web básicas: HTML, CSS y JavaScript (Vanilla), y construido con Vite para el flujo de desarrollo.
+            </p>
+            <p>
+              El backend se desarrolló con Supabase y ofrece una estructura sencilla de tablas relacionadas para categorías, productos y pedidos, facilitando la carga y gestión del catálogo. El propósito de esta entrega es demostrar buenas prácticas de maquetación, organización de código y consumo de un backend ligero.
+            </p>
+            <p class="tech-list"><strong>Tecnologías:</strong> HTML · CSS · JavaScript (Vanilla) · Vite · Supabase</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  <footer class="footer">
+    <div class="container">
+      <p>&copy; 2025 StevStore. Todos los derechos reservados.</p>
+      <p class="footer-credit">Desarrollado por Henry Steeven Jaimes Bastos, estudiante de ADSO del SENA.</p>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
