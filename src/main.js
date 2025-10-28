@@ -9,6 +9,9 @@ let allProducts = [];
 let categories = [];
 let currentCategory = 'all';
 
+console.log('Supabase URL:', supabaseUrl);
+console.log('Supabase KEY:', supabaseAnonKey);
+
 async function loadCategories() {
   const { data, error } = await supabase
     .from('categories')
@@ -245,6 +248,7 @@ async function processOrder(customerData) {
   try {
     const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
 
+    // 1. Primero crear la orden
     const { data: order, error: orderError } = await supabase
       .from('orders')
       .insert({
@@ -255,32 +259,61 @@ async function processOrder(customerData) {
         status: 'pending'
       })
       .select()
-      .maybeSingle();
+      .single();  // Cambié maybeSingle() por single()
 
-    if (orderError) throw orderError;
+    if (orderError) {
+      console.error('Error creating order:', orderError);
+      throw orderError;
+    }
 
-    const orderItems = cart.map(item => ({
-      order_id: order.id,
-      product_id: item.id,
-      quantity: item.quantity,
-      price: item.price
-    }));
+    // 2. Verificar que los productos del carrito existen en la BD
+    const productIds = cart.map(item => item.id);
+    const { data: existingProducts, error: productsError } = await supabase
+      .from('products')
+      .select('id')
+      .in('id', productIds);
 
+    if (productsError) {
+      console.error('Error verifying products:', productsError);
+      throw productsError;
+    }
+
+    // 3. Filtrar solo los productos que existen en la BD
+    const existingProductIds = existingProducts.map(p => p.id);
+    const validOrderItems = cart
+      .filter(item => existingProductIds.includes(item.id))
+      .map(item => ({
+        order_id: order.id,
+        product_id: item.id,
+        quantity: item.quantity,
+        price: item.price
+      }));
+
+    if (validOrderItems.length === 0) {
+      throw new Error('No hay productos válidos en el carrito');
+    }
+
+    // 4. Insertar los order_items válidos
     const { error: itemsError } = await supabase
       .from('order_items')
-      .insert(orderItems);
+      .insert(validOrderItems);
 
-    if (itemsError) throw itemsError;
+    if (itemsError) {
+      console.error('Error creating order items:', itemsError);
+      throw itemsError;
+    }
 
+    // 5. Limpiar carrito y mostrar éxito
     cart = [];
     saveCart();
     updateCartCount();
 
     closeCheckoutModal();
     document.getElementById('successModal').classList.add('active');
+    
   } catch (error) {
     console.error('Error processing order:', error);
-    alert('Hubo un error al procesar tu pedido. Por favor intenta de nuevo.');
+    alert('Hubo un error al procesar tu pedido: ' + error.message);
   }
 }
 
